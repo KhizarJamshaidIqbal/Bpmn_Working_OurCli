@@ -33,35 +33,6 @@ class setting extends StatefulWidget {
 }
 
 class _settingState extends State<setting> {
-  @override
-  void initState() {
-    // ignore: todo
-    // TODO: implement initState
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      try {
-        final sugerProvider =
-            Provider.of<SugerProvider>(context, listen: false);
-        final data = await SqliteService.getItems();
-        for (var item in data) {
-          sugerProvider.setSugerList(item);
-        }
-        final bpChartProvider =
-            Provider.of<BpChartProvider>(context, listen: false);
-        bpChartProvider.setChart(context);
-        //Now here we are fetching data from suger Table
-        final sugerData = await SugerServices.getItems();
-        final sugerValueProvider =
-            Provider.of<SugerValueProvider>(context, listen: false);
-        for (var item in sugerData) {
-          sugerValueProvider.setSugerList(item);
-        }
-        final chartProvider =
-            Provider.of<SugerChartProvider>(context, listen: false);
-        chartProvider.setChart(context);
-      } catch (e) {}
-    });
-  }
 BannerAd? bannerAd;
 bool isloaded=false;
 

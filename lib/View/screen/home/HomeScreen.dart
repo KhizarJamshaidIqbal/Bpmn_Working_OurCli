@@ -1,6 +1,7 @@
 // ignore_for_file: implementation_imports, unnecessary_import, unused_import, prefer_const_constructors, file_names, avoid_print, unused_field, prefer_final_fields, sized_box_for_whitespace
 
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:bpm/View/screen/bloodpreasure/bloodpressure.dart';
 import 'package:bpm/View/screen/bmi/addbmi.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import '../../../ControllerProvider/bottombarindexprovider.dart';
 import '../../Share/custom_BottomNavigationbar.dart';
+import '../../notificationservice/local_notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -49,6 +51,53 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.instance.getInitialMessage().then(
+      (message) {
+        print("FirebaseMessaging.instance.getInitialMessage");
+        if (message != null) {
+          print("New Notification");
+          // if (message.data['_id'] != null) {
+          //   Navigator.of(context).push(
+          //     MaterialPageRoute(
+          //       builder: (context) => DemoScreen(
+          //         id: message.data['_id'],
+          //       ),
+          //     ),
+          //   );
+          // }
+        }
+      },
+    );
+
+    // 2. This method only call when App in forground it mean app must be opened
+    FirebaseMessaging.onMessage.listen(
+      (message) {
+        print("FirebaseMessaging.onMessage.listen");
+        if (message.notification != null) {
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print("message.data11 ${message.data}");
+          LocalNotificationService.createanddisplaynotification(message);
+        }
+      },
+    );
+
+    // 3. This method only call when App in background and not terminated(not closed)
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) {
+        print("FirebaseMessaging.onMessageOpenedApp.listen");
+        if (message.notification != null) {
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print("message.data22 ${message.data['_id']}");
+        }
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -82,8 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Color.fromARGB(255, 243, 238, 238),
                         blurRadius: 4.1,
                         spreadRadius: 1.6,
-                        offset: Offset(
-                            0.0, 0.0), // shadow direction: bottom right
+                        offset:
+                            Offset(0.0, 0.0), // shadow direction: bottom right
                       )
                     ],
                   ),
@@ -93,35 +142,35 @@ class _HomeScreenState extends State<HomeScreen> {
                       InkWell(
                         onTap: () {
                           InterstitialAd.load(
-                      adUnitId: "ca-app-pub-3940256099942544/1033173712",
-                      request: const AdRequest(),
-                      adLoadCallback: InterstitialAdLoadCallback(
-                        onAdLoaded: (ad) {
-                          interstitialAd = ad;
-                          ad.show();
+                            adUnitId: "ca-app-pub-3940256099942544/1033173712",
+                            request: const AdRequest(),
+                            adLoadCallback: InterstitialAdLoadCallback(
+                              onAdLoaded: (ad) {
+                                interstitialAd = ad;
+                                ad.show();
 
-                          interstitialAd?.fullScreenContentCallback =
-                              FullScreenContentCallback(
-                                  onAdDismissedFullScreenContent: (ad) {
-                            interstitialAd?.dispose();
-                            ad.dispose();
-                           
-                          }, onAdFailedToShowFullScreenContent: (ad, err) {
-                            ad.dispose();
-                            interstitialAd?.dispose();
-                          });
-                        },
-                        onAdFailedToLoad: (err) {
-                          interstitialAd?.dispose();
-                        },
-                      ),
-                    );
-                   Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => BloodSuger(),
-                              ),
-                            );
+                                interstitialAd?.fullScreenContentCallback =
+                                    FullScreenContentCallback(
+                                        onAdDismissedFullScreenContent: (ad) {
+                                  interstitialAd?.dispose();
+                                  ad.dispose();
+                                }, onAdFailedToShowFullScreenContent:
+                                            (ad, err) {
+                                  ad.dispose();
+                                  interstitialAd?.dispose();
+                                });
+                              },
+                              onAdFailedToLoad: (err) {
+                                interstitialAd?.dispose();
+                              },
+                            ),
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BloodSuger(),
+                            ),
+                          );
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(top: 12, bottom: 15),
@@ -159,7 +208,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onAdDismissedFullScreenContent: (ad) {
                             interstitialAd?.dispose();
                             ad.dispose();
-                           
                           }, onAdFailedToShowFullScreenContent: (ad, err) {
                             ad.dispose();
                             interstitialAd?.dispose();
@@ -171,11 +219,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                     Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AddBmi(),
-                              ),
-                            );
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AddBmi(),
+                      ),
+                    );
                   },
                   child: Container(
                     height: 113,
@@ -224,34 +272,34 @@ class _HomeScreenState extends State<HomeScreen> {
             InkWell(
               onTap: () {
                 InterstitialAd.load(
-                      adUnitId: "ca-app-pub-3940256099942544/1033173712",
-                      request: const AdRequest(),
-                      adLoadCallback: InterstitialAdLoadCallback(
-                        onAdLoaded: (ad) {
-                          interstitialAd = ad;
-                          ad.show();
+                  adUnitId: "ca-app-pub-3940256099942544/1033173712",
+                  request: const AdRequest(),
+                  adLoadCallback: InterstitialAdLoadCallback(
+                    onAdLoaded: (ad) {
+                      interstitialAd = ad;
+                      ad.show();
 
-                          interstitialAd?.fullScreenContentCallback =
-                              FullScreenContentCallback(
-                                  onAdDismissedFullScreenContent: (ad) {
-                            interstitialAd?.dispose();
-                            ad.dispose();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => BloodPressure(),
-                              ),
-                            );
-                          }, onAdFailedToShowFullScreenContent: (ad, err) {
-                            ad.dispose();
-                            interstitialAd?.dispose();
-                          });
-                        },
-                        onAdFailedToLoad: (err) {
-                          interstitialAd?.dispose();
-                        },
-                      ),
-                    );
+                      interstitialAd?.fullScreenContentCallback =
+                          FullScreenContentCallback(
+                              onAdDismissedFullScreenContent: (ad) {
+                        interstitialAd?.dispose();
+                        ad.dispose();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BloodPressure(),
+                          ),
+                        );
+                      }, onAdFailedToShowFullScreenContent: (ad, err) {
+                        ad.dispose();
+                        interstitialAd?.dispose();
+                      });
+                    },
+                    onAdFailedToLoad: (err) {
+                      interstitialAd?.dispose();
+                    },
+                  ),
+                );
                 final bottomBarIndexProvider =
                     Provider.of<BottomBarIndexProvider>(context, listen: false);
                 bottomBarIndexProvider.setBottomIndex(index: 1);

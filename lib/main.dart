@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 import 'package:bpm/ControllerProvider/bpprovider/avgbpprovider.dart';
 import 'package:bpm/ControllerProvider/bottombarindexprovider.dart';
 import 'package:bpm/ControllerProvider/bpprovider/bpchartprovider.dart';
@@ -12,6 +12,8 @@ import 'package:bpm/ControllerProvider/sugerprovider/sugerchartprovider.dart';
 import 'package:bpm/ControllerProvider/sugerprovider/sugervalueprovider.dart';
 import 'package:bpm/ControllerProvider/sugerprovider/textfieldvalueprovider.dart';
 import 'package:bpm/View/SplashScreen/splashscreen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
@@ -20,9 +22,20 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'View/notificationservice/local_notification_service.dart';
+
 bool? seenOnboard;
+
+Future<void> backgroundHandler(RemoteMessage message) async {
+  print(message.data.toString());
+  print(message.notification!.title);
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  LocalNotificationService.initialize();
   // NativeNotify.initialize(2506, 'rjKtRDB4KfywP5UPL5b4KL', null, null);
   MobileAds.instance.initialize(); 
   // to show status bar
